@@ -1,0 +1,8 @@
+let
+    FonteKIT = Excel.CurrentWorkbook(){[Name="KIT"]}[Content],
+    FonteInspecao = Excel.CurrentWorkbook(){[Name="INSPECAO"]}[Content],
+    InspecaoAgrupada = Table.Group(FonteInspecao, {"Tecnico", "Produto"}, {{"UltimaInspecao", each List.Max([Data_Inspecao]), type nullable date}}),
+    MergeConsultas = Table.NestedJoin(FonteKIT, {"Tecnico", "Produto"}, InspecaoAgrupada, {"Tecnico", "Produto"}, "Inspecao", JoinKind.LeftOuter),
+    ExpandInspecao = Table.ExpandTableColumn(MergeConsultas, "Inspecao", {"UltimaInspecao"}, {"UltimaInspecao"})
+in
+    ExpandInspecao
